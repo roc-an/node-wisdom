@@ -98,6 +98,7 @@ static void GetOSInformation(const FunctionCallbackInfo<Value>& args) {
                                        arraysize(osInformation)));
 }
 
+// 参数 FunctionCallbackInfo：V8 用来转化 JS 参数的对象
 static void GetCPUInfo(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   Isolate* isolate = env->isolate();
@@ -131,7 +132,10 @@ static void GetCPUInfo(const FunctionCallbackInfo<Value>& args) {
         Number::New(isolate, static_cast<double>(ci->cpu_times.irq)));
   }
 
+  // 去 C++ 底层的一些代码中获取到了 CPU 信息
   uv_free_cpu_info(cpu_infos, count);
+  // 通过 V8 接口 GetReturnValue().Set()，把执行结果转变成 V8 变量，再最终变为 JS 变量，
+  // 从而实现了 C++ 到 JS 的变量转换
   args.GetReturnValue().Set(Array::New(isolate, result.data(), result.size()));
 }
 
